@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Làng Internet An Toàn</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏡</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1F3B4D;
+    --ink-soft:#3D5A6C;
+    --sky-top:#AEE0FF;
+    --sky-bot:#E9F8FF;
+    --grass:#3FA34D;
+    --grass-dark:#2C7E37;
+    --sun:#FFC93C;
+    --cream:#FFF7EA;
+    --paper:#FFFFFF;
+    --shadow: 0 10px 24px rgba(31,59,77,.10);
+    --shadow-lg: 0 18px 40px rgba(31,59,77,.16);
+    --radius: 22px;
+
+    --c1:#2EC4B6; /* Nhà Bí Mật */
+    --c2:#7C6CFF; /* Tháp Khóa */
+    --c3:#FF9F45; /* Cổng Làng */
+    --c4:#F2B705; /* Trạm Radar */
+    --c5-r:#FF5A5F; --c5-y:#FFC93C; --c5-g:#3FA34D; /* Đèn tín hiệu */
+    --c6:#FF6F91; /* Đội cứu hộ */
+    --c7:#4D96FF; /* Sân chơi game */
+    --c8:#D45BD8; /* Studio ảnh */
+    --c9:#E84545; /* Trạm đỏ */
+    --c10:#FFB000; /* Cổng tốt nghiệp */
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:90px;}
+  @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth;} }
+  body{
+    margin:0; color:var(--ink); background:var(--cream);
+    font-family:'Nunito',sans-serif; font-size:17px; line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{ font-family:'Fredoka',sans-serif; margin:0 0 .5em; line-height:1.18; color:var(--ink); }
+  p{margin:0 0 1em;}
+  a{color:inherit;}
+  img,svg{display:block; max-width:100%;}
+  button{font-family:inherit;}
+  :focus-visible{outline:3px solid var(--ink); outline-offset:3px; border-radius:6px;}
+
+  .wrap{max-width:920px; margin:0 auto; padding:0 24px;}
+
+  /* ---------- progress badge ---------- */
+  .progress-badge{
+    position:fixed; top:16px; right:16px; z-index:60;
+    background:var(--paper); border:2px solid var(--ink);
+    border-radius:999px; padding:8px 16px; font-weight:800; font-size:.85rem;
+    box-shadow:var(--shadow); display:flex; align-items:center; gap:6px;
+    transition:transform .25s ease;
+  }
+  .progress-badge.pulse{ transform:scale(1.08); }
+
+  /* ---------- road / mascot signature ---------- */
+  .road-track{
+    position:absolute; top:0; left:18px; width:40px; z-index:5; pointer-events:none;
+  }
+  .road-line{
+    position:absolute; left:50%; top:0; bottom:0; width:5px; transform:translateX(-50%);
+    background:repeating-linear-gradient(to bottom, var(--sun) 0 14px, transparent 14px 26px);
+    border-radius:6px;
+  }
+  .mascot{
+    position:absolute; left:50%; top:0; transform:translate(-50%,-50%);
+    font-size:30px; filter:drop-shadow(0 4px 6px rgba(0,0,0,.18));
+    transition:top .12s linear;
+  }
+  @media (max-width:780px){ .road-track{display:none;} }
+  @media (min-width:781px){
+    .content-pad{ padding-left:64px; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative; overflow:hidden;
+    background:linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bot) 78%);
+    padding:64px 24px 0; text-align:center;
+  }
+  .hero-inner{ max-width:760px; margin:0 auto; position:relative; z-index:3; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'Nunito',sans-serif; font-weight:800; letter-spacing:.08em;
+    text-transform:uppercase; font-size:.78rem; color:var(--ink-soft);
+    background:rgba(255,255,255,.7); border-radius:999px; padding:6px 14px; margin-bottom:18px;
+  }
+  .hero h1{ font-size:clamp(2.3rem,6vw,4.2rem); letter-spacing:.01em; }
+  .hero h1 span{ color:var(--c3); }
+  .hero p.lead{ font-size:1.15rem; color:var(--ink-soft); max-width:520px; margin:14px auto 28px; }
+
+  .guide-bubble{
+    display:inline-flex; gap:12px; align-items:flex-start; text-align:left;
+    background:var(--paper); border-radius:20px; padding:16px 20px; box-shadow:var(--shadow);
+    max-width:480px; margin:0 auto 36px;
+  }
+  .guide-bubble .face{ font-size:2.3rem; line-height:1; }
+  .guide-bubble p{ margin:0; font-size:.97rem; }
+  .guide-bubble b{ font-family:'Fredoka',sans-serif; font-weight:600; }
+
+  .scroll-cue{
+    display:inline-block; margin:0 0 18px; font-weight:800; color:var(--ink-soft);
+    text-decoration:none; font-size:.9rem;
+  }
+  .scroll-cue .chev{
+    display:block; margin:6px auto 0; width:14px; height:14px; border-right:3px solid var(--ink-soft);
+    border-bottom:3px solid var(--ink-soft); transform:rotate(45deg);
+    animation:bob 1.6s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion:reduce){ .scroll-cue .chev{animation:none;} }
+  @keyframes bob{ 0%,100%{transform:translateY(0) rotate(45deg);} 50%{transform:translateY(6px) rotate(45deg);} }
+
+  .skyline{ position:relative; height:170px; margin-top:18px; }
+  .cloud{ position:absolute; opacity:.9; animation:drift 22s linear infinite; }
+  @media (prefers-reduced-motion:reduce){ .cloud{animation:none;} }
+  @keyframes drift{ 0%{transform:translateX(0);} 50%{transform:translateX(18px);} 100%{transform:translateX(0);} }
+
+  /* ---------- village map ---------- */
+  .map-section{ background:var(--cream); padding:56px 0 64px; }
+  .map-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; margin-top:28px;
+  }
+  .map-card{
+    display:flex; flex-direction:column; gap:6px; text-decoration:none;
+    background:var(--paper); border-radius:16px; padding:16px; box-shadow:var(--shadow);
+    border:2px solid transparent; transition:transform .15s ease, border-color .15s ease;
+  }
+  .map-card:hover{ transform:translateY(-3px); }
+  .map-card .num{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:.78rem; color:var(--ink-soft); }
+  .map-card .ttl{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:1.02rem; }
+  .map-card .emoji{ font-size:1.6rem; }
+  .map-card.visited{ border-color:var(--grass); }
+  .map-card.visited .num::after{ content:" ✓"; color:var(--grass); }
+
+  /* ---------- generic house section ---------- */
+  .house{ position:relative; padding:72px 0; scroll-margin-top:90px; }
+  .house-head{ display:flex; align-items:flex-start; gap:18px; margin-bottom:22px; flex-wrap:wrap; }
+  .icon-box{ position:relative; flex:0 0 auto; }
+  .icon-box .badge-emoji{
+    position:absolute; right:-8px; bottom:-8px; font-size:1.5rem;
+    background:var(--paper); border-radius:50%; width:38px; height:38px;
+    display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow);
+  }
+  .house-head .text{ flex:1; min-width:200px; }
+  .house .eyebrow{ background:transparent; padding:0; color:var(--house-color, var(--ink-soft)); }
+  .house h2{ font-size:clamp(1.6rem,3.6vw,2.3rem); }
+
+  .card{
+    background:var(--paper); border-radius:var(--radius); padding:26px 28px; box-shadow:var(--shadow);
+    margin:18px 0;
+  }
+  .card.callout-warn{ background:#FFF1EC; border:2px solid #FFB199; }
+  .card.callout-tip{ background:#EFF6FF; border:2px solid #C7DFFF; }
+  .card.callout-good{ background:#EAFBF2; border:2px solid #BCEBD2; }
+  .card .label{
+    font-family:'Fredoka',sans-serif; font-weight:600; font-size:.85rem; text-transform:uppercase;
+    letter-spacing:.04em; margin-bottom:8px; display:block;
+  }
+
+  ul.list-good, ul.list-bad, ul.list-info{ list-style:none; padding:0; margin:0 0 1em; }
+  ul.list-good li, ul.list-bad li, ul.list-info li{ position:relative; padding-left:34px; margin-bottom:10px; }
+  ul.list-good li::before{ content:"✅"; position:absolute; left:0; top:1px; }
+  ul.list-bad li::before{ content:"🚫"; position:absolute; left:0; top:1px; }
+  ul.list-info li::before{ content:"🔒"; position:absolute; left:0; top:1px; }
+
+  /* ---------- quiz ---------- */
+  .quiz{
+    background:#FFF9E8; border:2px dashed #F0CF6B; border-radius:18px; padding:22px 24px; margin:22px 0;
+  }
+  .quiz .q-label{ font-family:'Fredoka',sans-serif; font-weight:600; font-size:.85rem; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em; }
+  .quiz p.scenario{ font-weight:700; margin:6px 0 16px; }
+  .quiz-options{ display:flex; flex-direction:column; gap:10px; }
+  .quiz-options button{
+    text-align:left; border:2px solid var(--ink); background:var(--paper); border-radius:14px;
+    padding:12px 16px; cursor:pointer; font-size:.97rem; font-weight:700; color:var(--ink);
+    transition:background .15s ease, transform .1s ease;
+  }
+  .quiz-options button:hover:not(:disabled){ background:#FFF1C9; }
+  .quiz-options button:disabled{ cursor:default; opacity:.6; }
+  .quiz-options button.chosen{ opacity:1; }
+  .quiz-options button.chosen[data-correct="true"]{ background:#D9F4E3; border-color:var(--grass-dark); }
+  .quiz-options button.chosen[data-correct="false"]{ background:#FFE1DD; border-color:var(--c9); }
+  .quiz-feedback{ margin-top:14px; font-weight:700; padding:12px 14px; border-radius:12px; }
+  .quiz-feedback[hidden]{ display:none; }
+  .quiz-feedback.correct{ background:#D9F4E3; color:#1E5B33; }
+  .quiz-feedback.incorrect{ background:#FFE1DD; color:#8C2A23; }
+
+  /* ---------- traffic light section ---------- */
+  .light-box{
+    display:flex; flex-direction:column; gap:14px; max-width:340px; margin:24px auto 8px;
+    background:var(--ink); border-radius:24px; padding:22px; box-shadow:var(--shadow-lg);
+  }
+  .light-row{ display:flex; align-items:center; gap:14px; color:#fff; }
+  .light-dot{ width:48px; height:48px; border-radius:50%; flex:0 0 auto; box-shadow:inset 0 -4px 8px rgba(0,0,0,.25); }
+  .light-row b{ font-family:'Fredoka',sans-serif; font-weight:600; display:block; font-size:1.05rem; }
+  .light-row span{ font-size:.9rem; opacity:.9; }
+
+  /* ---------- checklist (photo studio) ---------- */
+  .checklist{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin:20px 0; }
+  .check-item{ background:var(--paper); border-radius:16px; padding:16px; box-shadow:var(--shadow); }
+  .check-item .qmark{ font-size:1.6rem; margin-bottom:6px; display:block; }
+
+  /* ---------- graduation / certificate ---------- */
+  .graduation{ background:linear-gradient(180deg,#FFF7EA, #FFEFC9); padding:80px 0; scroll-margin-top:90px; }
+  .recap-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:26px 0 36px; }
+  .recap-chip{
+    background:var(--paper); border-radius:14px; padding:12px; text-align:center; box-shadow:var(--shadow);
+    font-size:.85rem; font-weight:800;
+  }
+  .recap-chip .e{ font-size:1.6rem; display:block; margin-bottom:4px; }
+
+  .cert-builder{ display:grid; grid-template-columns:1fr; gap:24px; align-items:start; }
+  @media(min-width:760px){ .cert-builder{ grid-template-columns:1fr 1fr; } }
+  .cert-form{ background:var(--paper); border-radius:var(--radius); padding:26px; box-shadow:var(--shadow); }
+  .cert-form label{ display:block; font-weight:800; margin-bottom:8px; font-size:.92rem; }
+  .cert-form input[type="text"]{
+    width:100%; padding:12px 14px; border-radius:12px; border:2px solid #DDD; font-size:1rem;
+    font-family:inherit; margin-bottom:16px;
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; border:none; border-radius:999px;
+    padding:13px 24px; font-family:'Fredoka',sans-serif; font-weight:600; font-size:1rem;
+    cursor:pointer; background:var(--ink); color:#fff; transition:transform .12s ease;
+  }
+  .btn:hover{ transform:translateY(-2px); }
+  .btn.outline{ background:transparent; color:var(--ink); border:2px solid var(--ink); }
+
+  .certificate{
+    position:relative; background:var(--paper); border-radius:var(--radius); padding:32px;
+    box-shadow:var(--shadow-lg); border:4px solid var(--c10); text-align:center;
+  }
+  .certificate .seal{ font-size:3rem; }
+  .certificate h3{ font-size:1.4rem; margin-bottom:4px; }
+  .certificate .cert-name{ font-family:'Fredoka',sans-serif; font-size:1.7rem; color:var(--c2); margin:10px 0; }
+  .certificate p{ font-size:.95rem; color:var(--ink-soft); margin:0 0 4px; }
+  .certificate .badges{ display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin:18px 0 6px; font-size:1.4rem; }
+
+  /* ---------- village square (adults) ---------- */
+  .square{ background:var(--paper); padding:70px 0; }
+  .square .grid2{ display:grid; grid-template-columns:1fr; gap:28px; margin-top:24px; }
+  @media(min-width:760px){ .square .grid2{ grid-template-columns: 1.1fr .9fr; } }
+  .square .card{ margin:0; }
+  .square ul.list-info li::before{ content:"🌱"; }
+
+  /* ---------- footer ---------- */
+  footer{ background:var(--grass-dark); color:#EFFAF1; padding:46px 24px 34px; text-align:center; }
+  footer .wrap{ max-width:680px; }
+  footer p{ font-size:.92rem; opacity:.92; }
+  footer .priv{ font-size:.8rem; opacity:.75; margin-top:10px; }
+
+  /* ---------- wave divider ---------- */
+  .wave{ display:block; width:100%; margin-top:-2px; }
+  .wave svg{ width:100%; height:60px; display:block; }
+
+  /* ---------- house icon ---------- */
+  .house-icon{ width:74px; height:74px; }
+
+  @media (max-width:600px){
+    .hero{ padding-top:48px; }
+    .house{ padding:54px 0; }
+    .light-box{ margin-left:0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-badge" id="progressBadge" aria-live="polite">🏠 0/10 ngôi nhà đã ghé</div>
+
+<div class="road-track" id="roadTrack" aria-hidden="true">
+  <div class="road-line"></div>
+  <div class="mascot" id="mascot">🐥</div>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero" id="top">
+  <div class="hero-inner">
+    <span class="eyebrow">🏡 một ngôi làng đặc biệt</span>
+    <h1>LÀNG INTERNET<br><span>AN TOÀN</span></h1>
+    <p class="lead">Nơi các bạn nhỏ học cách chơi vui, kết bạn và khám phá Internet — mà vẫn an toàn như đang ở nhà mình.</p>
+
+    <div class="guide-bubble">
+      <div class="face">🐥</div>
+      <p><b>Xin chào, mình là Chip!</b> Mình là hướng dẫn viên của làng. Phía dưới có 10 trạm dừng — mỗi trạm giữ một bí kíp an toàn nho nhỏ. Đi cùng mình khám phá nhé!</p>
+    </div>
+    <br>
+    <a href="#map" class="scroll-cue">Xem bản đồ làng<span class="chev"></span></a>
+  </div>
+
+  <div class="skyline" aria-hidden="true">
+    <svg viewBox="0 0 1200 220" preserveAspectRatio="none" style="position:absolute;bottom:0;left:0;width:100%;height:170px;">
+      <circle class="cloud" cx="1020" cy="40" r="26" fill="#fff"/>
+      <circle class="cloud" cx="1055" cy="50" r="20" fill="#fff"/>
+      <circle class="cloud" cx="985" cy="55" r="18" fill="#fff"/>
+      <circle class="cloud" cx="140" cy="30" r="22" fill="#fff" style="animation-delay:-6s"/>
+      <circle class="cloud" cx="175" cy="42" r="16" fill="#fff" style="animation-delay:-6s"/>
+      <circle cx="1100" cy="36" r="34" fill="var(--sun)" opacity=".9"/>
+      <path d="M0,170 C150,120 300,150 450,130 C600,112 750,150 900,128 C1020,112 1120,140 1200,124 L1200,220 L0,220 Z" fill="var(--grass)"/>
+      <!-- little houses on the hill -->
+      <g>
+        <polygon points="120,118 162,82 204,118" fill="var(--c1)"/>
+        <rect x="132" y="118" width="60" height="48" fill="var(--c1)"/>
+        <rect x="150" y="138" width="22" height="28" fill="#fff" opacity=".9"/>
+      </g>
+      <g>
+        <polygon points="320,108 360,72 400,108" fill="var(--c3)"/>
+        <rect x="332" y="108" width="56" height="46" fill="var(--c3)"/>
+        <rect x="350" y="126" width="20" height="26" fill="#fff" opacity=".9"/>
+      </g>
+      <g>
+        <polygon points="560,122 605,84 650,122" fill="var(--c7)"/>
+        <rect x="573" y="122" width="64" height="50" fill="var(--c7)"/>
+        <rect x="593" y="142" width="22" height="28" fill="#fff" opacity=".9"/>
+      </g>
+      <g>
+        <polygon points="820,112 862,76 904,112" fill="var(--c6)"/>
+        <rect x="832" y="112" width="60" height="48" fill="var(--c6)"/>
+        <rect x="850" y="132" width="22" height="26" fill="#fff" opacity=".9"/>
+      </g>
+      <g>
+        <polygon points="990,128 1028,94 1066,128" fill="var(--c2)"/>
+        <rect x="1001" y="128" width="54" height="44" fill="var(--c2)"/>
+        <rect x="1018" y="146" width="18" height="24" fill="#fff" opacity=".9"/>
+      </g>
+    </svg>
+  </div>
+</header>
+<div class="wave" aria-hidden="true">
+  <svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C300,60 900,0 1200,30 L1200,60 L0,60 Z" fill="var(--cream)"/></svg>
+</div>
+
+<!-- ===================== MAP / TABLE OF CONTENTS ===================== -->
+<section class="map-section" id="map">
+  <div class="wrap">
+    <span class="eyebrow" style="background:var(--paper)">🗺️ bản đồ làng</span>
+    <h2>10 trạm dừng trong chuyến đi của bạn</h2>
+    <p style="max-width:560px;color:var(--ink-soft)">Bấm vào một ngôi nhà để đi thẳng tới đó, hoặc cứ cuộn xuống và đi từng bước cùng Chip 🐥.</p>
+    <div class="map-grid">
+      <a class="map-card" data-target="house-1" href="#house-1"><span class="num">TRẠM 01</span><span class="emoji">🔒</span><span class="ttl">Nhà Bí Mật</span></a>
+      <a class="map-card" data-target="house-2" href="#house-2"><span class="num">TRẠM 02</span><span class="emoji">🔑</span><span class="ttl">Tháp Khóa Mật Mã</span></a>
+      <a class="map-card" data-target="house-3" href="#house-3"><span class="num">TRẠM 03</span><span class="emoji">🚪</span><span class="ttl">Cổng Làng</span></a>
+      <a class="map-card" data-target="house-4" href="#house-4"><span class="num">TRẠM 04</span><span class="emoji">🎣</span><span class="ttl">Trạm Radar Lừa Đảo</span></a>
+      <a class="map-card" data-target="house-5" href="#house-5"><span class="num">TRẠM 05</span><span class="emoji">🚦</span><span class="ttl">Đèn Tín Hiệu Làng</span></a>
+      <a class="map-card" data-target="house-6" href="#house-6"><span class="num">TRẠM 06</span><span class="emoji">🛟</span><span class="ttl">Đội Cứu Hộ Làng</span></a>
+      <a class="map-card" data-target="house-7" href="#house-7"><span class="num">TRẠM 07</span><span class="emoji">🎮</span><span class="ttl">Sân Chơi Game</span></a>
+      <a class="map-card" data-target="house-8" href="#house-8"><span class="num">TRẠM 08</span><span class="emoji">📸</span><span class="ttl">Studio Ảnh Làng</span></a>
+      <a class="map-card" data-target="house-9" href="#house-9"><span class="num">TRẠM 09</span><span class="emoji">🚨</span><span class="ttl">Trạm Đỏ — Báo Ngay!</span></a>
+      <a class="map-card" data-target="house-10" href="#house-10"><span class="num">TRẠM 10</span><span class="emoji">🎓</span><span class="ttl">Cổng Tốt Nghiệp</span></a>
+    </div>
+  </div>
+</section>
+
+<main class="content-pad">
+
+<!-- ===================== HOUSE 1 — SECRETS ===================== -->
+<section class="house" id="house-1" style="--house-color:var(--c1); background:#EAFBF8;">
+  <div class="wrap">
+    <div class="house-head">
+      <div class="icon-box">
+        <svg class="house-icon" viewBox="0 0 100 100" aria-hidden="true">
+          <polygon points="50,8 95,45 5,45" fill="var(--c1)"/>
+          <rect x="15" y="45" width="70" height="48" fill="var(--c1)"/>
+          <rect x="40" y="65" width="20" height="28" fill="#fff" opacity=".95"/>
+        </svg>
+        <span class="badge-emoji">🔒</span>
+      </div>
+      <div class="text">
+        <span class="eyebrow">Trạm 01</span>
+        <h2>Nhà Bí Mật</h2>
+      </div>
+    </div>
+
+    <p>Trong nhà này có một chiếc <b>rương báu</b> — đựng toàn bộ thông tin riêng của bạn. Chìa khóa rương chỉ bạn và cha mẹ được giữ thôi nhé!</p>
+
+    <div class="card">
+      <span class="label" style="color:var(--c1)">Những thứ ở trong rương báu — không mang ra khỏi nhà</span>
+      <ul class="list-info">
+        <li>Họ và tên đầy đủ</li>
+        <li>Địa chỉ nhà</li>
+        <li>Tên trường, lớp học</li>
+        <li>Số điện thoại</li>
+        <li>Mật khẩu</li>
+        <li>Vị trí bạn đang ở</li>
+      </ul>
+    </div>
+
+    <p>Khi chơi game hay nhắn tin với người không quen, đừng để rương báu bị mở ra nhé. Một người bạn tốt thật sự sẽ không cần bạn kể hết những điều này ngay từ lần gặp đầu tiên.</p>
+
+    <div class="quiz">
+      <span class="q-label">Tình huống</span>
+      <p class="scenario">Một người bạn mới quen trên game hỏi bạn học trường nào "để tụi mình học chung cho vui". Bạn sẽ làm gì?</p>
+      <div class="quiz-options">
+        <button data-correct="false" data-feedback="Khoan đã! Dù nghe có vẻ thân thiện, tên trường vẫn là một chìa khóa trong rương báu của bạn. Tốt nhất là không trả lời và kể với người lớn nhé.">Trả lời luôn cho thân thiện</button>
+        <button data-correct="true" data-feedback="Chính xác! Bạn không cần trả lời, và việc kể lại cho người lớn giúp họ biết để hỗ trợ bạn nếu cần.">Không trả lời, và kể lại với người lớn</button>
+        <button data-correct="false" data-feedback="Gần đúng rồi! Nói dối cũng không cần thiết — đơn giản nhất là không trả lời và báo người lớn biết.">Đưa ra một tên trường giả cho vui</button>
+      </div>
+      <p class="quiz-feedback" hidden></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOUSE 2 — PASSWORD TOWER ===================== -->
+<section class="house" id="house-2" style="--house-color:var(--c2); background:#F1EEFF;">
+  <div class="wrap">
+    <div class="house-head">
+      <div class="icon-box">
+        <svg class="house-icon" viewBox="0 0 100 100" aria-hidden="true">
+          <rect x="34" y="18" width="32" height="75" rx="4" fill="var(--c2)"/>
+          <polygon points="50,2 66,18 34,18" fill="var(--c2)"/>
+          <rect x="44" y="60" width="12" height="33" fill="#fff" opacity=".95"/>
+          <circle cx="50" cy="38" r="6" fill="#fff" opacity=".95"/>
+        </svg>
+        <span class="badge-emoji">🔑</span>
+      </div>
+      <div class="text">
+        <span class="eyebrow">Trạm 02</span>
+        <h2>Tháp Khóa Mật Mã</h2>
+      </div>
+    </div>
+
+    <p>Mật khẩu giống như một chiếc <b>chìa khóa thần kỳ</b> mở được cánh cửa nhà của bạn trên mạng. Chỉ có bạn — và có thể cha mẹ — được giữ chìa khóa này.</p>
+
+    <ul class="list-good">
+      <li>Mật khẩu mạnh = dài, có chữ, số và ký tự đặc biệt trộn lẫn — giống một câu mật mã riêng của bạn (ví dụ: <i>"ChipThich0BiCaRo!"</i>)</li>
+      <li>Nếu tài khoản có thêm bước xác nhận bằng mã gửi về điện thoại cha mẹ ("khóa hai lớp"), hãy bật nó lên — giống như nhà có thêm một lớp cửa nữa.</li>
+    </ul>
+    <ul class="list-bad">
+      <li>Không nói mật khẩu cho bất kỳ ai, kể cả bạn thân nhất.</li>
+      <li>Không dùng mật khẩu dễ đoán như "123456" hay ngày sinh của mình.</li>
+    </ul>
+
+    <div class="card callout-tip">
+      <span class="label">🎓 mẹo từ lớp an ninh mạng</span>
+      Không dùng lại một mật khẩu cho nhiều tài khoản. Nếu kẻ xấu lấy được một chìa khóa, bạn không muốn họ mở được tất cả các cửa khác trong làng của mình.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOUSE 3 — VILLAGE GATE ===================== -->
+<section class="house" id="house-3" style="--house-color:var(--c3); background:#FFF3E8;">
+  <div class="wrap">
+    <div class="house-head">
+      <div class="icon-box">
+        <svg class="house-icon" viewBox="0 0 100 100" aria-hidden="true">
+          <rect x="10" y="30" width="14" height="60" fill="var(--c3)"/>
+          <rect x="76" y="30" width="14" height="60" fill="var(--c3)"/>
+          <path d="M10,30 Q50,2 90,30 L90,42 Q50,18 10,42 Z" fill="var(--c3)"/>
+          <rect x="40" y="55" width="20" height="35" fill="#fff" opacity=".95"/>
+        </svg>
+        <span class="badge-emoji">🚪</span>
+      </div>
+      <div class="text">
+        <span class="eyebrow">Trạm 03</span>
+        <h2>Cổng Làng</h2>
+      </div>
+    </div>
+
+    <p>Làng mình rất vui, mỗi ngày có rất nhiều người ghé qua cổng. Nhưng không phải ai đứng ở cổng cũng là người tốt — và mình không thể biết chắc ai là ai chỉ qua màn hình.</p>
+
+    <div class="card callout-warn">
+      <span class="label" style="color:#C2410C">⚠️ quy tắc sống còn</span>
+      Không bao giờ đi gặp mặt một người chỉ quen trên mạng, nếu cha mẹ chưa đồng ý và đi cùng bạn.
+    </div>
+
+    <p>Một người tốt thật sự sẽ luôn hiểu và chờ được khi bạn nói: <i>"Mình cần hỏi cha mẹ trước."</i> Avatar đẹp và lời nói ngọt ngào không có nghĩa là người đó thật sự như vậy ở ngoài đời.</p>
+  </div>
+</section>
+
+<!-- ===================== HOUSE 4 — SCAM RADAR ===================== -->
+<section class="house" id="house-4" style="--house-color:var(--c4); background:#FFF8E1;">
+  <div class="wrap">
+    <div class="house-head">
+      <div class="icon-box">
+        <svg class="house-icon" viewBox="0 0 100 100" aria-hidden="true">
+          <polygon points="50,8 95,45 5,45" fill="var(--c4)"/>
+          <rect x="15" y="45" width="70" height="48" fill="var(--c4)"/>
+          <circle cx="50" cy="68" r="14" fill="none" stroke="#fff" stroke-width="4" opacity=".95"/>
+          <line x1="59" y1="77" x2="68" y2="86" stroke="#fff" stroke-width="4" opacity=".95"/>
+        </svg>
+        <span class="badge-emoji">🎣</span>
+      </div>
+      <div class="text">
+        <span class="eyebrow">Trạm 04</span>
+        <h2>Trạm Radar Lừa Đảo</h2>
+      </div>
+    </div>
+
+    <p>Có những "lưỡi câu" vô hình giăng trên mạng — gọi là <b>lừa đảo trực tuyến</b>. Chúng giả làm quà tặng, link trúng thưởng hoặc tin nhắn khẩn cấp để dụ bạn bấm vào.</p>
+
+    <ul class="list-bad">
+      <li>Không bấm vào liên kết lạ, dù nó nói "Bạn đã trúng giải!"</li>
+      <li>Không tải ứng dụng hay game từ nguồn không rõ ràng.</li>
+      <li>Luôn hỏi người lớn trước khi làm theo bất kỳ hướng dẫn lạ nào trên mạng.</li>
+    </ul>
+
+    <div class="card callout-tip">
+      <span class="label">🎓 dấu hiệu của lưỡi câu lừa đảo</span>
+      Tạo cảm giác gấp gáp ("chỉ còn 5 phút!"), hứa hẹn nghe quá tốt để là thật, hoặc yêu cầu bạn nhập thông tin cá nhân ngay lập tức.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOUSE 5 — TRAFFIC LIGHT ===================== -->
+<section class="house" id="house-5" style="--house-color:var(--ink); background:#EAF4FF;">
+  <div class="wrap">
+    <div class="house-head">
+      <div class="icon-box">
+        <svg class="house-icon" viewBox="0 0 100 100" aria-hidden="true">
+          <rect x="32" y="6" width="36" height="80" rx="14" fill="var(--ink)"/>
+          <circle cx="50" cy="26" r="9" fill="var(--c5-r)"/>
+          <circle cx="50" cy="46" r="9" fill="var(--c5-y)"/>
+          <circle cx="50" cy="66" r="9" fill="var(--c5-g)"/>
+        </svg>
+        <span class="badge-emoji">🚦</span>
+      </div>
+      <div class="text">
+        <span class="eyebrow">Trạm 05</span>
+        <h2>Đèn Tín Hiệu Làng</h2>
+      </div>
+    </div>
+
+    <p>Đây là chiếc đèn đặc biệt nhất trong làng. Bất cứ khi nào gặp điều gì lạ, khó chịu hoặc không chắc chắn trên mạng — hãy nhìn vào đèn này.</p>
+
+    <div class="light-box">
+      <div class="light-row"><span class="light-dot" style="background:var(--c5-r)"></span><div><b>DỪNG LẠI</b><span>Đừng bấm, đừng trả lời, đừng làm theo ngay.</span></div></div>
+      <div class="light-row"><span class="light-dot" style="background:var(--c5-y)"></span><div><b>NGHĨ XEM</b><span>Điều này có gì đáng ngờ không? Có giống điều mình từng học không?</span></div></div>
+      <div class="light-row"><span class="light-dot" style="background:var(--c5-g)"></span><div><b>HỎI NGƯỜI LỚN</b><span>Kể cho cha mẹ hoặc thầy cô, rồi hỏi xem nên làm gì tiếp theo.</span></div></div>
+    </div>
+
+    <p style="text-align:center;max-width:480px;margin:24px auto 0">Bạn không cần nhớ hết mọi quy tắc trong làng — chỉ cần nhớ 3 bước này, bạn đã an toàn hơn rất nhiều rồi!</p>
+  </div>
+</section>
+
+<!-- ===================== HOUSE 6 — RESCUE SQUAD ===================== -->
+<section class="house" id="house-6" style="--house-color:var(--c6); background:#FFF0F3;">
+  <div class="wrap">
+    <div class="house-head">
+      <div class="icon-box">
+        <svg class="house-icon" viewBox="0 0 100 100" aria-hidden="true">
+          <polygon points="50,8 95,45 5,45" fill="var(--c6)"/>
+          <rect x="15" y="45" width="70" height="48" fill="var(--c6)"/>
+          <rect x="40" y="65" width="20" height="28" fill="#fff" opacity=".95"/>
+        </svg>
+        <span class="badge-emoji">🛟</span>
+      </div>
+      <div class="text">
+        <span class="eyebrow">Trạm 06</span>
+        <h2>Đội Cứu Hộ Làng</h2>
+      </div>
+    </div>
+
+    <p>Đôi khi trên mạng có những lời nói hoặc hành động khiến bạn buồn, sợ hoặc bị tổn thương — gọi là <b>bắt nạt trên mạng</b>. Khi điều đó xảy ra:</p>
+
+    <ul class="list-good">
+      <li>Lưu lại bằng chứng bằng cách chụp màn hình.</li>
+      <li>Chặn (block) tài khoản đang quấy rối bạn.</li>
+      <li>Kể ngay với cha mẹ hoặc giáo viên.</li>
+    </ul>
+    <ul class="list-bad">
+      <li>Không chửi bới, mạt sát lại.</li>
+      <li>Không hùa theo trêu chọc người khác.</li>
+    </ul>
+
+    <div class="card callout-good">
+      <span class="label" style="color:#1E5B33">💚 nhớ kỹ điều này</span>
+      Kể lại cho người lớn <b>không phải là "mách lẻo"</b> — đó là cách bạn tự bảo vệ mình và giúp đội cứu hộ của làng biết để hành động.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOUSE 7 — GAME PLAYGROUND ===================== -->
+<section class="house" id="house-7" style="--house-color:var(--c7); background:#EAF2FF;">
+  <div class="wrap">
+    <div class="house-head">
+      <div class="icon-box">
+        <svg class="house-icon" viewBox="0 0 100 100" aria-hidden="true">
+          <polygon points="50,8 95,45 5,45" fill="var(--c7)"/>
+          <rect x="15" y="45" width="70" height="48" fill="var(--c7)"/>
+          <rect x="40" y="65" width="20" height="28" fill="#fff" opacity=".95"/>
+        </svg>
+        <span class="badge-emoji">🎮</span>
+      </div>
+      <div class="text">
+        <span class="eyebrow">Trạm 07</span>
+        <h2>Sân Chơi Game An Toàn</h2>
+      </div>
+    </div>
+
+    <p>Chơi game online vui thật đấy, nhưng sân chơi này cũng cần vài quy tắc nhỏ để không ai "chơi xấu" được bạn.</p>
+
+    <ul class="list-bad">
+      <li>Không chia sẻ tài khoản game cho ai, kể cả bạn thân.</li>
+      <li>Không trao đổi hay mua bán vật phẩm với người lạ.</li>
+      <li>Không tự ý dùng thẻ ngân hàng hoặc thẻ game của cha mẹ để nạp tiền.</li>
+      <li>Không cài phần mềm crack, hack hay cheat — chúng có thể là "cửa sau" để kẻ xấu lẻn vào máy của bạn.</li>
+    </ul>
+
+    <div class="quiz">
+      <span class="q-label">Tình huống</span>
+      <p class="scenario">Một người chơi cùng team nói sẽ cho bạn một vật phẩm hiếm, nếu bạn gửi cho họ tài khoản để "vào lấy hộ". Bạn sẽ làm gì?</p>
+      <div class="quiz-options">
+        <button data-correct="true" data-feedback="Đúng vậy! Một món quà không đáng để đánh đổi tài khoản của bạn. Đây rất có thể là một cái bẫy.">Từ chối, không đưa tài khoản cho ai</button>
+        <button data-correct="false" data-feedback="Cẩn thận nhé! Dù nghe hấp dẫn, đưa tài khoản cho người khác — kể cả để 'lấy hộ' — vẫn rất rủi ro. Vật phẩm có thể mất, tài khoản có thể bị chiếm.">Đưa thử vì vật phẩm có vẻ hấp dẫn</button>
+      </div>
+      <p class="quiz-feedback" hidden></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOUSE 8 — PHOTO STUDIO ===================== -->
+<section class="house" id="house-8" style="--house-color:var(--c8); background:#FBEFFC;">
+  <div class="wrap">
+    <div class="house-head">
+      <div class="icon-box">
+        <svg class="house-icon" viewBox="0 0 100 100" aria-hidden="true">
+          <rect x="10" y="30" width="80" height="55" rx="8" fill="var(--c8)"/>
+          <circle cx="50" cy="58" r="16" fill="#fff" opacity=".95"/>
+          <rect x="34" y="20" width="14" height="12" fill="var(--c8)"/>
+        </svg>
+        <span class="badge-emoji">📸</span>
+      </div>
+      <div class="text">
+        <span class="eyebrow">Trạm 08</span>
+        <h2>Studio Ảnh Làng</h2>
+      </div>
+    </div>
+
+    <p>Trước khi đăng một tấm ảnh hay video lên mạng, hãy dừng lại ở studio này và tự hỏi mình 4 câu sau:</p>
+
+    <div class="checklist">
+      <div class="check-item"><span class="qmark">📍</span>Có lộ địa chỉ nhà không?</div>
+      <div class="check-item"><span class="qmark">🎽</span>Có lộ đồng phục hoặc tên trường không?</div>
+      <div class="check-item"><span class="qmark">🪪</span>Có lộ giấy tờ cá nhân nào không?</div>
+      <div class="check-item"><span class="qmark">😳</span>Sau này lớn lên, mình có ngại nếu ai đó xem lại ảnh này?</div>
+    </div>
+
+    <div class="card callout-warn">
+      <span class="label" style="color:#C2410C">⚠️ nếu có 1 câu trả lời là "có"</span>
+      Hãy hỏi cha mẹ trước khi đăng tấm ảnh hoặc video đó nhé!
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOUSE 9 — RED EMERGENCY STATION ===================== -->
+<section class="house" id="house-9" style="--house-color:var(--c9); background:#FFF0EE;">
+  <div class="wrap">
+    <div class="house-head">
+      <div class="icon-box">
+        <svg class="house-icon" viewBox="0 0 100 100" aria-hidden="true">
+          <polygon points="50,6 94,90 6,90" fill="var(--c9)"/>
+          <rect x="46" y="38" width="8" height="28" fill="#fff"/>
+          <circle cx="50" cy="76" r="5" fill="#fff"/>
+        </svg>
+        <span class="badge-emoji">🚨</span>
+      </div>
+      <div class="text">
+        <span class="eyebrow">Trạm 09</span>
+        <h2>Trạm Đỏ — Báo Ngay!</h2>
+      </div>
+    </div>
+
+    <p>Có một số tình huống không cần "Dừng – Nghĩ" lâu — hãy chạy thẳng đến trạm đỏ và <b>báo người lớn ngay lập tức</b> nếu:</p>
+
+    <ul class="list-bad">
+      <li>Bị hỏi địa chỉ nhà hoặc số điện thoại.</li>
+      <li>Bị xin ảnh riêng tư, nhạy cảm.</li>
+      <li>Bị đe dọa hoặc ép buộc làm điều gì đó.</li>
+      <li>Bị rủ hoặc ép gặp mặt ngoài đời.</li>
+      <li>Bị yêu cầu giữ bí mật, không cho cha mẹ biết.</li>
+      <li>Bị gửi hình ảnh hoặc nội dung khiến bạn sợ hoặc khó chịu.</li>
+    </ul>
+
+    <div class="card callout-good">
+      <span class="label" style="color:#1E5B33">💚 nhớ kỹ điều này</span>
+      Không có tình huống nào trong số này là lỗi của bạn. Điều đúng đắn nhất luôn là kể ngay cho người lớn mà bạn tin tưởng.
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOUSE 10 — GRADUATION GATE / CERTIFICATE ===================== -->
+<section class="graduation" id="house-10">
+  <div class="wrap content-pad">
+    <div class="house-head">
+      <div class="icon-box">
+        <svg class="house-icon" viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="38" r="26" fill="var(--c10)"/>
+          <polygon points="50,12 56,30 75,30 60,42 65,60 50,49 35,60 40,42 25,30 44,30" fill="#fff" opacity=".95"/>
+          <polygon points="34,58 42,90 50,76 58,90 66,58" fill="var(--c10)"/>
+        </svg>
+        <span class="badge-emoji">🎓</span>
+      </div>
+      <div class="text">
+        <span class="eyebrow" style="color:var(--c10)">Trạm 10</span>
+        <h2>Cổng Tốt Nghiệp</h2>
+      </div>
+    </div>
+
+    <p>Bạn đã đi qua hết các trạm trong Làng Internet An Toàn rồi! Cùng nhìn lại 9 bí kíp bạn đã thu thập được:</p>
+
+    <div class="recap-grid">
+      <div class="recap-chip"><span class="e">🔒</span>Giữ bí mật riêng</div>
+      <div class="recap-chip"><span class="e">🔑</span>Mật khẩu là bí mật</div>
+      <div class="recap-chip"><span class="e">🚪</span>Cẩn thận người lạ</div>
+      <div class="recap-chip"><span class="e">🎣</span>Tránh lừa đảo</div>
+      <div class="recap-chip"><span class="e">🚦</span>Dừng – Nghĩ – Hỏi</div>
+      <div class="recap-chip"><span class="e">🛟</span>Báo khi bị bắt nạt</div>
+      <div class="recap-chip"><span class="e">🎮</span>An toàn khi chơi game</div>
+      <div class="recap-chip"><span class="e">📸</span>Kiểm tra trước khi đăng ảnh</div>
+      <div class="recap-chip"><span class="e">🚨</span>Báo ngay khi nguy hiểm</div>
+    </div>
+
+    <div class="cert-builder">
+      <div class="cert-form">
+        <label for="certName">Nhập tên của bạn để nhận giấy chứng nhận</label>
+        <input type="text" id="certName" placeholder="Ví dụ: Bé Minh Anh" maxlength="40">
+        <button class="btn" id="printBtn">🖨️ In / Lưu giấy chứng nhận</button>
+      </div>
+      <div class="certificate" id="certificate">
+        <div class="seal">🏅</div>
+        <h3>Chứng Nhận Công Dân</h3>
+        <p style="text-transform:uppercase;letter-spacing:.06em;font-weight:800;color:var(--c10)">Làng Internet An Toàn</p>
+        <div class="cert-name" id="certNameDisplay">Bạn</div>
+        <p>đã hoàn thành chuyến đi qua 10 trạm dừng và trở thành một công dân an toàn của làng.</p>
+        <div class="badges">🔒🔑🚪🎣🚦🛟🎮📸🚨🎓</div>
+        <p style="font-size:.82rem" id="certDate"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="wave" aria-hidden="true" style="transform:scaleY(-1)">
+  <svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C300,0 900,60 1200,30 L1200,60 L0,60 Z" fill="var(--paper)"/></svg>
+</div>
+
+<!-- ===================== VILLAGE SQUARE — FOR PARENTS & TEACHERS ===================== -->
+<section class="square" id="square">
+  <div class="wrap">
+    <span class="eyebrow" style="background:var(--cream)">🪑 quảng trường làng</span>
+    <h2>Dành cho cha mẹ &amp; giáo viên</h2>
+    <div class="grid2">
+      <div class="card" style="margin:0">
+        <span class="label" style="color:var(--c2)">Cách dùng làng này cùng trẻ</span>
+        <ul class="list-info">
+          <li>Đi qua 10 trạm cùng con một lần đầu, để giải thích thêm những từ con chưa hiểu.</li>
+          <li>Sau đó, hãy để con tự khám phá lại — các câu hỏi tình huống giúp con tự suy nghĩ thay vì chỉ ghi nhớ.</li>
+          <li>Ôn lại quy tắc "Dừng – Nghĩ – Hỏi" định kỳ — đây là quy tắc nền tảng nhất, dễ nhớ nhất.</li>
+          <li>In giấy chứng nhận ở cuối trang và dán lên tường như một lời nhắc nhở vui.</li>
+        </ul>
+      </div>
+      <div class="card callout-tip" style="margin:0">
+        <span class="label">🎓 gợi ý mở rộng</span>
+        Những nội dung trong làng này lấy cảm hứng từ các nguyên tắc an toàn mạng phổ biến trong các khóa học an ninh mạng cơ bản — được đơn giản hóa thành ngôn ngữ và hình ảnh phù hợp với trẻ nhỏ. Đây là điểm khởi đầu tốt, không thay thế cho việc đồng hành thường xuyên của người lớn.
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p style="font-family:'Fredoka',sans-serif;font-weight:600;font-size:1.2rem;color:#fff">🏡 Làng Internet An Toàn</p>
+    <p>Được xây dựng để giúp các bạn nhỏ tự tin và an toàn hơn khi khám phá Internet.</p>
+    <p class="priv">Mọi thông tin bạn nhập ở trang này (ví dụ: tên trên giấy chứng nhận) chỉ hiển thị ngay trên màn hình của bạn — không được lưu trữ hay gửi đi đâu cả.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---- road track sizing ----
+  var track = document.getElementById('roadTrack');
+  var mascot = document.getElementById('mascot');
+  function sizeTrack(){
+    if(!track) return;
+    track.style.height = document.documentElement.scrollHeight + 'px';
+  }
+  function updateMascot(){
+    if(!track || !mascot) return;
+    var scrollable = document.documentElement.scrollHeight - window.innerHeight;
+    var progress = scrollable > 0 ? window.scrollY / scrollable : 0;
+    var trackH = track.offsetHeight;
+    var top = Math.max(20, Math.min(progress * trackH, trackH - 20));
+    mascot.style.top = top + 'px';
+  }
+  var ticking = false;
+  window.addEventListener('scroll', function(){
+    if(!ticking){ requestAnimationFrame(function(){ updateMascot(); ticking=false; }); ticking=true; }
+  }, {passive:true});
+  window.addEventListener('resize', function(){ sizeTrack(); updateMascot(); });
+  window.addEventListener('load', function(){ sizeTrack(); updateMascot(); });
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(function(){ sizeTrack(); updateMascot(); }); }
+  setTimeout(function(){ sizeTrack(); updateMascot(); }, 400);
+
+  // ---- progress badge via IntersectionObserver ----
+  var badge = document.getElementById('progressBadge');
+  var stops = document.querySelectorAll('.house, .graduation');
+  var visited = new Set();
+  if('IntersectionObserver' in window){
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting && entry.intersectionRatio > 0.35){
+          if(!visited.has(entry.target.id)){
+            visited.add(entry.target.id);
+            badge.textContent = '🏠 ' + visited.size + '/10 ngôi nhà đã ghé';
+            badge.classList.add('pulse');
+            setTimeout(function(){ badge.classList.remove('pulse'); }, 300);
+            var card = document.querySelector('.map-card[data-target="'+entry.target.id+'"]');
+            if(card) card.classList.add('visited');
+          }
+        }
+      });
+    }, {threshold:[0.35]});
+    stops.forEach(function(s){ obs.observe(s); });
+  }
+
+  // ---- quiz logic ----
+  document.querySelectorAll('.quiz').forEach(function(quiz){
+    var buttons = quiz.querySelectorAll('.quiz-options button');
+    var feedback = quiz.querySelector('.quiz-feedback');
+    buttons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if(quiz.classList.contains('answered')) return;
+        quiz.classList.add('answered');
+        buttons.forEach(function(b){ b.disabled = true; });
+        btn.classList.add('chosen');
+        feedback.textContent = btn.dataset.feedback;
+        feedback.hidden = false;
+        feedback.classList.add(btn.dataset.correct === 'true' ? 'correct' : 'incorrect');
+      });
+    });
+  });
+
+  // ---- certificate ----
+  var nameInput = document.getElementById('certName');
+  var nameDisplay = document.getElementById('certNameDisplay');
+  if(nameInput){
+    nameInput.addEventListener('input', function(){
+      nameDisplay.textContent = nameInput.value.trim() || 'Bạn';
+    });
+  }
+  var dateEl = document.getElementById('certDate');
+  if(dateEl){
+    try{ dateEl.textContent = 'Ngày ' + new Date().toLocaleDateString('vi-VN'); }
+    catch(e){ dateEl.textContent = ''; }
+  }
+  var printBtn = document.getElementById('printBtn');
+  if(printBtn){ printBtn.addEventListener('click', function(){ window.print(); }); }
+})();
+</script>
+
+</body>
+</html>
